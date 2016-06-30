@@ -4,7 +4,10 @@ import java.util.logging.Logger;
 
 import com.alibaba.fastjson.JSON;
 
-import connector.ConnecterCentext;
+import entity.Proto;
+import entity.Sync;
+import entity.Login;
+import entity.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerAdapter;
@@ -20,21 +23,46 @@ public class TimeClienthandler extends ChannelHandlerAdapter {
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {
-		ConnecterCentext conctx = new ConnecterCentext();
-		conctx.setCid("ruansheng");
-		conctx.setCom("jh");
-		String cmd = JSON.toJSONString(conctx).toString();
-	
+		/*
+		Message msg = new Message();
+		msg.setId("123456789");
+		msg.set_a("send");
+		msg.setText("hello");
+		msg.setTo("9527");
+		msg.setFr("2536");
+		msg.setType(1);
+		
+		String cmd = JSON.toJSONString(msg).toString();
+		*/
+		
+		Login login = new Login();
+		login.setAction("auth");
+		login.setUid("9527");
+		String cmd = JSON.toJSONString(login).toString();
+		
 		byte[] req = (cmd + System.getProperty("line.separator")).getBytes();
-		ByteBuf msg = Unpooled.buffer(req.length);
-	    msg.writeBytes(req);
-		ctx.writeAndFlush(msg);
+		ByteBuf bmsg = Unpooled.buffer(req.length);
+		bmsg.writeBytes(req);
+		ctx.writeAndFlush(bmsg);
 	}
 	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		String body = (String)msg;
 	    System.out.println(body);
+	    
+		Proto proto = JSON.parseObject(body, Proto.class);
+		if(proto.getAction().equals("msg-psh")) {
+			Sync sync = new Sync();
+			sync.setAction("msg-sync");
+			sync.setFr("9527");
+			String cmd = JSON.toJSONString(sync).toString();
+			
+			byte[] req = (cmd + System.getProperty("line.separator")).getBytes();
+			ByteBuf bmsg = Unpooled.buffer(req.length);
+			bmsg.writeBytes(req);
+			ctx.writeAndFlush(bmsg);
+		}
 	}
 	
 	@Override
