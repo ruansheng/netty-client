@@ -23,6 +23,7 @@ public class TimeClienthandler extends ChannelHandlerAdapter {
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {
+		System.out.println("ttt");
 		/*
 		Message msg = new Message();
 		msg.setId("123456789");
@@ -35,6 +36,7 @@ public class TimeClienthandler extends ChannelHandlerAdapter {
 		String cmd = JSON.toJSONString(msg).toString();
 		*/
 		
+		/*
 		Login login = new Login();
 		login.setAction("auth");
 		login.setUid("9527");
@@ -44,13 +46,15 @@ public class TimeClienthandler extends ChannelHandlerAdapter {
 		ByteBuf bmsg = Unpooled.buffer(req.length);
 		bmsg.writeBytes(req);
 		ctx.writeAndFlush(bmsg);
+		*/
 	}
 	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		String body = (String)msg;
-	    System.out.println(body);
+	    System.out.println("as:" + body);
 	    
+	    /*
 		Proto proto = JSON.parseObject(body, Proto.class);
 		if(proto.getAction().equals("msg-psh")) {
 			Sync sync = new Sync();
@@ -62,7 +66,7 @@ public class TimeClienthandler extends ChannelHandlerAdapter {
 			ByteBuf bmsg = Unpooled.buffer(req.length);
 			bmsg.writeBytes(req);
 			ctx.writeAndFlush(bmsg);
-		}
+		}*/
 	}
 	
 	@Override
